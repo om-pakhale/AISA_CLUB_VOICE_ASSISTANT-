@@ -46,7 +46,7 @@ components.html("""
         margin: 20px auto 10px auto;
     }
 
-    /* Unified Cyan-Blue Base */
+    /* Unified Cyan-Blue Base for both Input & Output */
     .voice-orb {
         width: 110px;
         height: 110px;
@@ -61,7 +61,7 @@ components.html("""
         animation: gentle-corners 3s infinite ease-in-out;
     }
 
-    /* Subtle edge movement during input and output */
+    /* Edge-only subtle corner movement */
     .orb-active {
         box-shadow: 0 0 25px rgba(14, 165, 233, 0.75), 0 0 42px rgba(2, 132, 199, 0.45);
         animation: subtle-corner-vibrate 0.35s infinite alternate ease-in-out;
@@ -95,6 +95,7 @@ components.html("""
         height: 20px;
     }
 
+    /* Minimalist Answer Box: Shows ONLY Answer */
     #answer-card {
         width: 92%;
         max-width: 600px;
@@ -120,15 +121,14 @@ components.html("""
 <div id="status-hint">Starting assistant...</div>
 <div id="answer-card"></div>
 
-<audio id="tts-player" style="display:none;"></audio>
-
 <script>
+// Complete Rulebook Knowledge Base from QueVoiceAssistant.docx
 const RULES = [
     {
         intent: "what_is_aisa",
         tokens: ["what is aisa club", "what is aisa", "aisa club kya hai", "about aisa"],
         en: "AISA stands for the Artificial Intelligence Students Association in the Department of Computer Science and Engineering AI and ML at DKTE.",
-        hi: "AISA, DKTE ke Computer Science and Engineering AI and ML department mein Artificial Intelligence Students Association hai."
+        hi: "AISA stands for the Artificial Intelligence Students Association in the Department of Computer Science and Engineering AI and ML at DKTE."
     },
     {
         intent: "president",
@@ -211,12 +211,12 @@ const RULES = [
     {
         intent: "legacy_exchange",
         tokens: ["what is the legacy exchange", "legacy exchange kya hai", "what is legacy exchange", "legacy exchange"],
-        en: "The Legacy Exchange is an alumni interaction initiative organized by AISA based on the motto Reconnect, Inspire, Empower, hosted by Tanmay and Drushti.",
+        en: "The Legacy Exchange is an alumni interaction initiative organized by AISA based on the motto Reconnect, Inspire, Empower, hosted by AISA Club.",
         hi: "The Legacy Exchange AISA dwara aayojit ek alumni interaction initiative hai jiska motto Reconnect, Inspire, Empower hai."
     },
     {
         intent: "legacy_alumni",
-        tokens: ["who was the alumni of the legacy exchange", "alumni of the legacy exchange", "alumni kaun the", "alumni of legacy"],
+        tokens: ["who were the alumni of the legacy exchange", "alumni of the legacy exchange", "alumni kaun the", "alumni of legacy"],
         en: "Mr. Neeraj Mirashi, Sejal pandharpatte, Sanika Patil, Alisha Attar.",
         hi: "Alumni mein Mr. Neeraj Mirashi, Sejal Pandharpatte, Sanika Patil, aur Alisha Attar the."
     },
@@ -356,25 +356,13 @@ function getAnswer(rawQuery) {
 const orb = document.getElementById("orb");
 const statusHint = document.getElementById("status-hint");
 const answerCard = document.getElementById("answer-card");
-const audioPlayer = document.getElementById("tts-player");
 
 let isSpeaking = false;
 let recognition = null;
-let preferredFemaleVoice = null;
+let keepAliveTimer = null;
 
-// Lock specifically onto natural Indian Female voice profiles
-function pickFemaleVoice() {
-    const voices = window.speechSynthesis.getVoices();
-    preferredFemaleVoice = voices.find(v => 
-        (v.name.includes("Neerja") || v.name.includes("Swara") || v.name.includes("Heera") || v.name.includes("Zira") || v.name.includes("Female")) &&
-        (v.lang.includes("IN") || v.lang.includes("en"))
-    ) || voices.find(v => v.lang.includes("en-IN") || v.lang.includes("hi-IN")) || voices[0];
-}
-
-window.speechSynthesis.onvoiceschanged = pickFemaleVoice;
-pickFemaleVoice();
-
-function playFemaleVoice(text, lang, onDone) {
+// Exact native speech synthesis implementation from your working template
+function speakAnswer(text, lang, callback) {
     isSpeaking = true;
     if (recognition) {
         try { recognition.abort(); } catch(e) {}
@@ -388,33 +376,32 @@ function playFemaleVoice(text, lang, onDone) {
 
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    if (preferredFemaleVoice) utterance.voice = preferredFemaleVoice;
-    
-    // Female pitch and natural cadence tuning
-    utterance.pitch = 1.15;
-    utterance.rate = 0.96;
+    // Preserved exact original configuration for natural female voice tone
+    utterance.lang = lang === "hi" ? "hi-IN" : "en-IN";
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
 
     utterance.onend = () => {
         isSpeaking = false;
         orb.className = "voice-orb orb-idle";
         statusHint.textContent = "Listening via mic...";
-        if (onDone) onDone();
+        if (callback) callback();
     };
 
     utterance.onerror = () => {
         isSpeaking = false;
         orb.className = "voice-orb orb-idle";
         statusHint.textContent = "Listening via mic...";
-        if (onDone) onDone();
+        if (callback) callback();
     };
 
     window.speechSynthesis.speak(utterance);
 }
 
-function startListening() {
+function startContinuousListening() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-        statusHint.textContent = "Web Speech API not supported. Use Google Chrome or Microsoft Edge.";
+        statusHint.textContent = "Web Speech API not supported. Please use Chrome/Edge.";
         return;
     }
 
@@ -460,14 +447,16 @@ function startListening() {
 
         if (finalTranscript.trim().length > 2) {
             const { text, lang } = getAnswer(finalTranscript);
-            playFemaleVoice(text, lang, () => {
+            speakAnswer(text, lang, () => {
                 restartListening();
             });
         }
     };
 
-    recognition.onerror = () => {
-        restartListening();
+    recognition.onerror = (event) => {
+        if (event.error !== "no-speech") {
+            restartListening();
+        }
     };
 
     recognition.onend = () => {
@@ -495,6 +484,7 @@ function restartListening() {
     }, 150);
 }
 
+// Background Tab Keep-Alive Handling
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden && !isSpeaking) {
         statusHint.textContent = "Tab focused. Re-engaging mic...";
@@ -508,7 +498,7 @@ window.addEventListener("focus", () => {
     }
 });
 
-setInterval(() => {
+keepAliveTimer = setInterval(() => {
     if (!isSpeaking && recognition) {
         try {
             recognition.start();
@@ -516,10 +506,11 @@ setInterval(() => {
     }
 }, 4000);
 
+// Self-introduction on initial page load
 window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
-        playFemaleVoice("Hello! I am the AISA Club voice assistant. I am listening, ask me anything.", "en", () => {
-            startListening();
+        speakAnswer("Hello! I am the AISA Club voice assistant. I am listening, ask me anything.", "en", () => {
+            startContinuousListening();
         });
     }, 600);
 });
