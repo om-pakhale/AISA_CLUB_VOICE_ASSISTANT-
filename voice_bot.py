@@ -12,7 +12,7 @@ st.markdown("""
         padding-top: 1.5rem;
         padding-bottom: 1.5rem;
         max-width: 720px;
-    }
+    }  
 </style>
 """, unsafe_allow_html=True)
 
