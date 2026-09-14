@@ -262,6 +262,14 @@ components.html(r"""
 <script>
 const RULES = [
     {
+        intent: "introduction",
+        questions_en: ["introduce yourself", "who are you", "tell me about yourself", "what can you do"],
+        questions_hi: ["apna introduction do", "aap kaun ho", "apne bare mein batao", "tum kya kar sakte ho"],
+        core_keywords: ["introduce"],
+        en: "I am the AISA Club Voice Assistant, designed to help students and participants with information about the Artificial Intelligence Students Association at DKTE.",
+        hi: "Main AISA Club Voice Assistant hoon, jo DKTE mein Artificial Intelligence Students Association ke baare mein jaankari dene ke liye banaya gaya hoon."
+    },
+    {
         intent: "what_is_aisa",
         questions_en: ["what is aisa club", "what is aisa", "tell me about aisa club", "what is the full form of aisa"],
         questions_hi: ["aisa club kya hai", "aisa kya hai", "aisa ke bare me batao", "aisa club kya h"],
