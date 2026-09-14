@@ -74,8 +74,8 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Component with 680px frame and auto-fit inner containment
-components.html("""
+# Component with full question patterns, keyword extraction, and mutual exclusion
+components.html(r"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -199,7 +199,6 @@ components.html("""
         flex-shrink: 0;
     }
 
-    /* Auto-scrolling, high-visibility box for lengthy text */
     #answer-card {
         width: 92%;
         max-width: 580px;
@@ -220,7 +219,6 @@ components.html("""
         box-sizing: border-box;
     }
 
-    /* Custom smooth green scrollbar */
     #answer-card::-webkit-scrollbar {
         width: 5px;
     }
@@ -265,260 +263,474 @@ components.html("""
 const RULES = [
     {
         intent: "what_is_aisa",
-        en_tokens: ["what is aisa club", "what is aisa", "aisa club kya hai", "about aisa"],
-        hi_tokens: ["aisa club kya hai", "aisa kya hai", "aisa ke bare me batao", "aisa kya h"],
+        questions_en: ["what is aisa club", "what is aisa", "tell me about aisa club", "what is the full form of aisa"],
+        questions_hi: ["aisa club kya hai", "aisa kya hai", "aisa ke bare me batao", "aisa club kya h"],
+        core_keywords: ["aisa", "club"],
         en: "AISA stands for the Artificial Intelligence Students Association in the Department of Computer Science and Engineering AI and ML at DKTE.",
         hi: "AISA stands for the Artificial Intelligence Students Association in the Department of Computer Science and Engineering AI and ML at DKTE."
     },
     {
         intent: "president",
-        en_tokens: ["who is the president", "president", "adhyaksh", "current president", "who is president of aisa"],
-        hi_tokens: ["president kaun hain", "president kon hai", "aisa ke president", "adhyaksh kaun hai"],
+        questions_en: ["who is the president", "who is president", "who is the current president", "who is the president of aisa", "who is the aisa president"],
+        questions_hi: ["president kaun hain", "president kon hai", "aisa ke president kaun hai", "adhyaksh kaun hai"],
+        core_keywords: ["president"],
+        exclude_words: ["ex", "vice", "purv", "first", "pehle", "pehla"],
         en: "Mr. Arjun Jadhav is the President of the AISA club.",
         hi: "Mr. Arjun Jadhav AISA club ke President hain."
     },
     {
         intent: "vice_president",
-        en_tokens: ["who is the vice president", "vice president", "upadhyaksh", "vc president", "who is vp"],
-        hi_tokens: ["vice president kaun hain", "vice president kon hai", "upadhyaksh kaun hai"],
+        questions_en: ["who is the vice president", "who is vice president", "who is the current vice president", "who is vp", "who is the vp of aisa"],
+        questions_hi: ["vice president kaun hain", "vice president kon hai", "upadhyaksh kaun hai", "vp kaun hai"],
+        core_keywords: ["vice", "president"],
+        exclude_words: ["ex", "purv", "former"],
         en: "Miss. Trupti Varma is the Vice President of the AISA club.",
         hi: "Miss Trupti Varma AISA club ki Vice President hain."
     },
     {
-        intent: "secretaries",
-        en_tokens: ["who are the secretaries", "secretaries", "secretary", "sachiv"],
-        hi_tokens: ["secretaries kaun hain", "secretaries kon hai", "sachiv kaun hai"],
-        en: "Mr. Tanmay Chikhalikar and Mr. Ahmad Momin are the Secretaries of the AISA club.",
-        hi: "Mr. Tanmay Chikhalikar aur Mr. Ahmad Momin AISA club ke Secretaries hain."
-    },
-    {
-        intent: "treasurers",
-        en_tokens: ["who are the treasurers", "treasurers", "treasurer", "koshadhyaksh"],
-        hi_tokens: ["treasurers kaun hain", "treasurers kon hai", "koshadhyaksh kaun hai"],
-        en: "Miss. Siddhi Kurle and Mr. Farhan Sheikh are the Treasurers of the AISA club.",
-        hi: "Miss Siddhi Kurle aur Mr. Farhan Sheikh AISA club ke Treasurers hain."
-    },
-    {
-        intent: "technical_directors",
-        en_tokens: ["who are the technical directors", "technical directors", "technical director", "takniki nideshak"],
-        hi_tokens: ["technical directors kaun hain", "technical director kon hai", "takniki nideshak"],
-        en: "Miss. Saniya Kolar and Mr. Gous Bahurupi are the Technical Directors of the AISA club.",
-        hi: "Miss Saniya Kolar aur Mr. Gous Bahurupi AISA club ke Technical Directors hain."
-    },
-    {
-        intent: "technical_team",
-        en_tokens: ["who are the technical team members", "technical team", "technical team members", "takniki team"],
-        hi_tokens: ["technical team mein kaun kaun hai", "technical team kon hai", "takniki team"],
-        en: "The technical team members are Mr. Om Pakhale, Mr. Samad Latkar, and Miss. Shubhangi Teke.",
-        hi: "Technical team mein Mr. Om Pakhale, Mr. Samad Latkar aur Miss Shubhangi Teke hain."
-    },
-    {
-        intent: "social_media",
-        en_tokens: ["social media head", "social media team", "social media team members", "social media"],
-        hi_tokens: ["social media head aur team members kaun hai", "social media head kon hai"],
-        en: "Mr. Manthan Warte is the Social Media Team Head and The social media team members include Mr. Sushil Sapakal and Mr. Yash Ghatage.",
-        hi: "Mr. Manthan Warte Social Media Team ke Head hain aur team members mein Mr. Sushil Sapakal aur Mr. Yash Ghatage hain."
-    },
-    {
-        intent: "coordinator",
-        en_tokens: ["who is the aisa coordinator", "aisa coordinator", "coordinator", "faculty coordinator", "kulkarni"],
-        hi_tokens: ["aisa coordinator kaun hain", "coordinator kaun hai"],
-        en: "Mrs. D. M. Kulkarni is the AISA Coordinator.",
-        hi: "Mrs. D. M. Kulkarni AISA Coordinator hain."
-    },
-    {
-        intent: "hod",
-        en_tokens: ["who is the hod", "hod", "head of department", "hod of aiml", "shirgave"],
-        hi_tokens: ["hod kaun hain", "aiml ke hod kaun hai"],
-        en: "Prof. Dr. S. K. Shirgave is the HOD of CSE AIML.",
-        hi: "Prof. Dr. S. K. Shirgave CSE AIML ke HOD hain."
-    },
-    {
-        intent: "notice_date",
-        en_tokens: ["date of the aisa notice", "aisa notice date", "notice date", "notice kab aaya"],
-        hi_tokens: ["aisa notice ki date kya hai", "notice kab aaya tha"],
-        en: "The notice was issued on 18/08/2026.",
-        hi: "Notice 18 August 2026 ko jaari kiya gaya tha."
-    },
-    {
-        intent: "techblitz_2026",
-        en_tokens: ["what is techblitz 2026", "what is techblitz", "techblitz 2026 kya hai"],
-        hi_tokens: ["techblitz 2026 kya hai", "techblitz ke bare me"],
-        en: "TechBlitz 2026 is an inter-collegiate technical challenge provided by AISA, held on 1st September 2026 at CCL 2, consisting of three rounds with a team size of two and an entry fee of 100 rupees per team.",
-        hi: "TechBlitz 2026 AISA dwara organized ek inter-collegiate technical challenge hai jo 1 September 2026 ko CCL 2 mein hua tha."
-    },
-    {
-        intent: "previous_events",
-        en_tokens: ["previous events of aisa", "past events", "pichle events", "what was the previous events"],
-        hi_tokens: ["aisa ke pichle events kaun se the", "pichle events kaun se the"],
-        en: "Previous events of AISA was The Legacy Exchange an alumni meet and TechBlitz a technical event.",
-        hi: "AISA ke pichle events The Legacy Exchange jo ek alumni meet tha, aur TechBlitz jo ek technical event tha."
-    },
-    {
-        intent: "what_was_techblitz",
-        en_tokens: ["what was techblitz", "techblitz kya tha", "about techblitz"],
-        hi_tokens: ["techblitz kya tha", "techblitz event kya tha"],
-        en: "TechBlitz was a technical event organized by the AISA Artificial Intelligence Student Association which had The three rounds are Round 1 Aptitude Round, Round 2 Coding and Logic Challenge, and Round 3 Final or Surprise Round.",
-        hi: "TechBlitz AISA dwara aayojit ek technical event tha jisme teen rounds the: Aptitude Round, Coding and Logic Challenge, aur Surprise Round."
-    },
-    {
-        intent: "legacy_exchange",
-        en_tokens: ["what is the legacy exchange", "legacy exchange kya hai", "what is legacy exchange", "legacy exchange"],
-        hi_tokens: ["legacy exchange kya hai", "the legacy exchange kya hai"],
-        en: "The Legacy Exchange is an alumni interaction initiative organized by AISA based on the motto Reconnect, Inspire, Empower, hosted by Tanmay and Drushti.",
-        hi: "The Legacy Exchange AISA dwara aayojit ek alumni interaction initiative hai jiska motto Reconnect, Inspire, Empower hai."
-    },
-    {
-        intent: "legacy_alumni",
-        en_tokens: ["who was the alumni of the legacy exchange", "alumni of the legacy exchange", "alumni kaun the", "alumni of legacy"],
-        hi_tokens: ["legacy exchange ke alumni kaun the", "alumni kaun the"],
-        en: "Mr. Neeraj Mirashi, Sejal pandharpatte, Sanika Patil, Alisha Attar.",
-        hi: "Alumni mein Mr. Neeraj Mirashi, Sejal Pandharpatte, Sanika Patil, aur Alisha Attar the."
-    },
-    {
-        intent: "japan_alumni",
-        en_tokens: ["alumni joining virtually from japan", "virtually from japan", "japan se kaun"],
-        hi_tokens: ["japan se virtually kaun join kar raha hai", "japan se kaun"],
-        en: "Ms. Sejal Pandharpatte is participating virtually from Japan.",
-        hi: "Ms. Sejal Pandharpatte Japan se virtually participate kar rahi hain."
-    },
-    {
-        intent: "motto",
-        en_tokens: ["what is the motto of aisa", "motto of aisa", "aisa motto", "motto"],
-        hi_tokens: ["aisa ka motto kya hai", "motto kya hai"],
-        en: "The motto of AISA is Unite, Excel, Achieve.",
-        hi: "AISA ka motto hai Unite, Excel, Achieve."
-    },
-    {
-        intent: "purpose",
-        en_tokens: ["what is the main purpose of aisa", "purpose of aisa", "main purpose", "objective of aisa"],
-        hi_tokens: ["aisa ka main purpose kya hai", "aisa ka uddeshya kya hai"],
-        en: "AISA promotes learning, innovation, technical skills and collaborative growth among students in Artificial Intelligence and related technologies.",
-        hi: "AISA Artificial Intelligence aur related technologies mein students ke beech learning, innovation, aur collaborative growth ko promote karta hai."
-    },
-    {
-        intent: "techblitz_participants",
-        en_tokens: ["how many students participated in techblitz", "kitne students ne participate kiya", "participants in techblitz"],
-        hi_tokens: ["techblitz mein kitne students ne participate kiya", "kitne students ne participate kiya"],
-        en: "32 Teams were participated where 2 members per team.",
-        hi: "32 Teams ne participate kiya tha jisme har team mein 2 members the."
-    },
-    {
-        intent: "techblitz_date",
-        en_tokens: ["when was techblitz conducted", "techblitz kab conduct kiya gaya", "date of techblitz"],
-        hi_tokens: ["techblitz kab conduct kiya gaya", "techblitz kab hua tha"],
-        en: "TECHBLITZ was conducted on 1st September 2026.",
-        hi: "TECHBLITZ 1 September 2026 ko conduct kiya gaya tha."
-    },
-    {
-        intent: "techblitz_skills",
-        en_tokens: ["what skills were tested in techblitz", "skills were tested", "skills tested in techblitz"],
-        hi_tokens: ["techblitz mein kaun si skills test hui", "kaun si skills test hui"],
-        en: "The event tested logical reasoning, aptitude, problem-solving and technical skills.",
-        hi: "Event mein logical reasoning, aptitude, problem-solving aur technical skills test ki gayi thi."
-    },
-    {
-        intent: "techblitz_rounds",
-        en_tokens: ["how many rounds were there in techblitz", "rounds were there in techblitz", "kitne rounds the"],
-        hi_tokens: ["techblitz mein kitne rounds the", "kitne rounds the"],
-        en: "There were three rounds.",
-        hi: "Usme teen rounds the."
-    },
-    {
         intent: "ex_president",
-        en_tokens: ["who was the aisa ex-president", "aisa ex-president", "ex president", "former president", "pichli president", "janhavi"],
-        hi_tokens: ["aisa ki ex-president kaun thi", "ex-president kaun thi", "pichli president kaun thi"],
+        questions_en: ["who was the aisa ex-president", "who was the ex president", "who was the former president of aisa", "who was the previous president"],
+        questions_hi: ["aisa ki ex-president kaun thi", "ex-president kaun thi", "purv adhyaksh kaun thi", "pichli president kaun thi"],
+        core_keywords: ["ex", "president"],
+        exclude_words: ["vice"],
         en: "Miss Janhavi Kulkarni was the AISA EX-President.",
         hi: "Miss Janhavi Kulkarni AISA ki EX-President thi."
     },
     {
         intent: "ex_vice_president",
-        en_tokens: ["who were the ex- vice president of aisa", "ex vice president", "former vice president", "pichle upadhyaksh"],
-        hi_tokens: ["aisa ke ex-vice president kaun the", "ex-vice president kaun the"],
+        questions_en: ["who were the ex- vice president of aisa", "who were the ex vice presidents", "who was the former vice president", "who were the previous vice presidents"],
+        questions_hi: ["aisa ke ex-vice president kaun the", "ex-vice president kaun the", "pichle upadhyaksh kaun the", "purv upadhyaksh kaun the"],
+        core_keywords: ["ex", "vice", "president"],
         en: "Miss Pranali Sawant and Mr. Athrav Koli were the AISA EX-Vice Presidents.",
         hi: "Miss Pranali Sawant aur Mr. Athrav Koli AISA ke EX-Vice Presidents the."
     },
     {
+        intent: "secretaries",
+        questions_en: ["who are the secretaries", "who is the secretary", "who are the secretaries of aisa", "names of secretaries"],
+        questions_hi: ["secretaries kaun hain", "secretaries kon hai", "sachiv kaun hai", "aisa ke sachiv kaun hain"],
+        core_keywords: ["secretary"],
+        en: "Mr. Tanmay Chikhalikar and Mr. Ahmad Momin are the Secretaries of the AISA club.",
+        hi: "Mr. Tanmay Chikhalikar aur Mr. Ahmad Momin AISA club ke Secretaries hain."
+    },
+    {
+        intent: "treasurers",
+        questions_en: ["who are the treasurers", "who is the treasurer", "who are the treasurers of aisa", "who handles finance"],
+        questions_hi: ["treasurers kaun hain", "treasurers kon hai", "koshadhyaksh kaun hai", "khajanchi kaun hai"],
+        core_keywords: ["treasurer"],
+        en: "Miss. Siddhi Kurle and Mr. Farhan Sheikh are the Treasurers of the AISA club.",
+        hi: "Miss Siddhi Kurle aur Mr. Farhan Sheikh AISA club ke Treasurers hain."
+    },
+    {
+        intent: "technical_directors",
+        questions_en: ["who are the technical directors", "who is the technical director", "technical directors of aisa"],
+        questions_hi: ["technical directors kaun hain", "technical director kon hai", "takniki nideshak kaun hai"],
+        core_keywords: ["technical", "director"],
+        en: "Miss. Saniya Kolar and Mr. Gous Bahurupi are the Technical Directors of the AISA club.",
+        hi: "Miss Saniya Kolar aur Mr. Gous Bahurupi AISA club ke Technical Directors hain."
+    },
+    {
+        intent: "technical_team",
+        questions_en: ["who are the technical team members", "who is in technical team", "technical team members of aisa", "names of technical team members"],
+        questions_hi: ["technical team mein kaun kaun hai", "technical team kon hai", "takniki team ke members"],
+        core_keywords: ["technical", "team"],
+        exclude_words: ["director", "role", "responsibility", "work"],
+        en: "The technical team members are Mr. Om Pakhale, Mr. Samad Latkar, and Miss. Shubhangi Teke.",
+        hi: "Technical team mein Mr. Om Pakhale, Mr. Samad Latkar aur Miss Shubhangi Teke hain."
+    },
+    {
+        intent: "social_media",
+        questions_en: ["who is the social media head and social media team members", "who is the social media head", "social media team members"],
+        questions_hi: ["social media head aur team members kaun hai", "social media head kon hai", "social media team kaun hai"],
+        core_keywords: ["social", "media"],
+        exclude_words: ["role", "responsibility"],
+        en: "Mr. Manthan Warte is the Social Media Team Head and The social media team members include Mr. Sushil Sapakal and Mr. Yash Ghatage.",
+        hi: "Mr. Manthan Warte Social Media Team ke Head hain aur team members mein Mr. Sushil Sapakal aur Mr. Yash Ghatage hain."
+    },
+    {
+        intent: "coordinator",
+        questions_en: ["who is the aisa coordinator", "who is the coordinator", "who is faculty coordinator", "aisa coordinator name"],
+        questions_hi: ["aisa coordinator kaun hain", "coordinator kaun hai", "faculty coordinator kon hai"],
+        core_keywords: ["coordinator"],
+        en: "Mrs. D. M. Kulkarni is the AISA Coordinator.",
+        hi: "Mrs. D. M. Kulkarni AISA Coordinator hain."
+    },
+    {
+        intent: "hod",
+        questions_en: ["who is the hod", "who is the hod of cse aiml", "who is head of department"],
+        questions_hi: ["hod kaun hain", "aiml ke hod kaun hai", "hod kon hai"],
+        core_keywords: ["hod"],
+        en: "Prof. Dr. S. K. Shirgave is the HOD of CSE AIML.",
+        hi: "Prof. Dr. S. K. Shirgave CSE AIML ke HOD hain."
+    },
+    {
+        intent: "notice_date",
+        questions_en: ["what is the date of the aisa notice", "date of notice", "when was aisa notice issued", "notice date"],
+        questions_hi: ["aisa notice ki date kya hai", "notice kab aaya tha", "notice ki tarikh kya hai"],
+        core_keywords: ["notice", "date"],
+        en: "The notice was issued on 18/08/2026.",
+        hi: "Notice 18 August 2026 ko jaari kiya gaya tha."
+    },
+    {
+        intent: "techblitz_participants",
+        questions_en: ["how many students participated in techblitz", "participants in techblitz", "how many teams participated in techblitz"],
+        questions_hi: ["techblitz mein kitne students ne participate kiya", "kitne students ne participate kiya", "kitni teams ne participate kiya"],
+        core_keywords: ["tech", "blitz", "participat"],
+        en: "32 Teams were participated where 2 members per team.",
+        hi: "32 Teams ne participate kiya tha jisme har team mein 2 members the."
+    },
+    {
+        intent: "techblitz_date",
+        questions_en: ["when was techblitz conducted", "what is the date of techblitz", "when did techblitz happen"],
+        questions_hi: ["techblitz kab conduct kiya gaya", "techblitz kab hua tha", "techblitz ki date kya thi"],
+        core_keywords: ["tech", "blitz", "date", "happen"],
+        en: "TECHBLITZ was conducted on 1st September 2026.",
+        hi: "TECHBLITZ 1 September 2026 ko conduct kiya gaya tha."
+    },
+    {
+        intent: "techblitz_skills",
+        questions_en: ["what skills were tested in techblitz", "skills tested in techblitz", "which skills were tested in techblitz"],
+        questions_hi: ["techblitz mein kaun si skills test hui", "kaun si skills test hui", "techblitz me kya test hua"],
+        core_keywords: ["tech", "blitz", "skill"],
+        en: "The event tested logical reasoning, aptitude, problem-solving and technical skills.",
+        hi: "Event mein logical reasoning, aptitude, problem-solving aur technical skills test ki gayi thi."
+    },
+    {
+        intent: "techblitz_rounds",
+        questions_en: ["how many rounds were there in techblitz", "rounds in techblitz", "how many rounds in techblitz"],
+        questions_hi: ["techblitz mein kitne rounds the", "kitne rounds the techblitz me"],
+        core_keywords: ["tech", "blitz", "round", "many"],
+        exclude_words: ["what was", "kya tha"],
+        en: "There were three rounds.",
+        hi: "Usme teen rounds the."
+    },
+    {
+        intent: "what_was_techblitz",
+        questions_en: ["what was techblitz", "tell me about techblitz", "what were the rounds in techblitz"],
+        questions_hi: ["techblitz kya tha", "techblitz event kya tha"],
+        core_keywords: ["tech", "blitz", "kya", "tha"],
+        en: "TechBlitz was a technical event organized by the AISA Artificial Intelligence Student Association which had The three rounds are Round 1 Aptitude Round, Round 2 Coding and Logic Challenge, and Round 3 Final or Surprise Round.",
+        hi: "TechBlitz AISA dwara aayojit ek technical event tha jisme teen rounds the: Aptitude Round, Coding and Logic Challenge, aur Surprise Round."
+    },
+    {
+        intent: "techblitz_2026",
+        questions_en: ["what is techblitz 2026", "tell me about techblitz 2026", "what is entry fee of techblitz", "where was techblitz held"],
+        questions_hi: ["techblitz 2026 kya hai", "techblitz 2026 kya h", "techblitz ke bare me batao"],
+        core_keywords: ["tech", "blitz"],
+        exclude_words: ["round", "skill", "date", "participat"],
+        en: "TechBlitz 2026 is an inter-collegiate technical challenge provided by AISA, held on 1st September 2026 at CCL 2, consisting of three rounds with a team size of two and an entry fee of 100 rupees per team.",
+        hi: "TechBlitz 2026 AISA dwara organized ek inter-collegiate technical challenge hai jo 1 September 2026 ko CCL 2 mein hua tha."
+    },
+    {
+        intent: "previous_events",
+        questions_en: ["what was the previous events of aisa", "previous events of aisa", "what were past events of aisa"],
+        questions_hi: ["aisa ke pichle events kaun se the", "pichle events kaun se the", "aisa ke purane events kya the"],
+        core_keywords: ["previous", "event"],
+        en: "Previous events of AISA was The Legacy Exchange an alumni meet and TechBlitz a technical event.",
+        hi: "AISA ke pichle events The Legacy Exchange jo ek alumni meet tha, aur TechBlitz jo ek technical event tha."
+    },
+    {
+        intent: "japan_alumni",
+        questions_en: ["who is the alumni joining virtually from japan", "alumni joining virtually from japan", "who joined from japan"],
+        questions_hi: ["japan se virtually kaun join kar raha hai", "japan se kaun virtually juda tha", "japan se kaun hai"],
+        core_keywords: ["japan", "virtuallty"],
+        en: "Ms. Sejal Pandharpatte is participated virtually from Japan.",
+        hi: "Ms. Sejal Pandharpatte Japan se virtually participate kar rahi hain."
+    },
+    {
+        intent: "legacy_alumni",
+        questions_en: ["who was the alumni of the legacy exchange", "alumni of the legacy exchange", "who were the alumni in legacy exchange"],
+        questions_hi: ["legacy exchange ke alumni kaun the", "legacy exchange me alumni kaun the", "alumni kaun the"],
+        core_keywords: ["alumni", "legacy"],
+        exclude_words: ["japan", "meaning"],
+        en: "Mr. Neeraj Mirashi, Sejal pandharpatte, Sanika Patil, Alisha Attar.",
+        hi: "Alumni mein Mr. Neeraj Mirashi, Sejal Pandharpatte, Sanika Patil, aur Alisha Attar the."
+    },
+    {
+        intent: "legacy_exchange",
+        questions_en: ["what is the legacy exchange", "what is legacy exchange", "tell me about the legacy exchange"],
+        questions_hi: ["legacy exchange kya hai", "the legacy exchange kya hai", "legacy exchange kya h"],
+        core_keywords: ["legacy", "exchange"],
+        exclude_words: ["alumni"],
+        en: "The Legacy Exchange is an alumni interaction initiative organized by AISA based on the motto Reconnect, Inspire, Empower, hosted by AISA Club.",
+        hi: "The Legacy Exchange AISA dwara aayojit ek alumni interaction initiative hai jiska motto Reconnect, Inspire, Empower hai."
+    },
+    {
+        intent: "motto",
+        questions_en: ["what is the motto of aisa", "motto of aisa", "what is aisa motto", "what is the tagline of aisa"],
+        questions_hi: ["aisa ka motto kya hai", "motto kya hai aisa ka", "tagline kya hai"],
+        core_keywords: ["motto"],
+        en: "The motto of AISA is Unite, Excel, Achieve.",
+        hi: "AISA ka motto hai Unite, Excel, Achieve."
+    },
+    {
+        intent: "purpose",
+        questions_en: ["what is the main purpose of aisa", "what is the purpose of aisa", "what is the objective of aisa", "aim of aisa"],
+        questions_hi: ["aisa ka main purpose kya hai", "aisa ka uddeshya kya hai", "aisa ka maksad kya hai"],
+        core_keywords: ["purpose", "main"],
+        en: "AISA promotes learning, innovation, technical skills and collaborative growth among students in Artificial Intelligence and related technologies.",
+        hi: "AISA Artificial Intelligence aur related technologies mein students ke beech learning, innovation, aur collaborative growth ko promote karta hai."
+    },
+    {
         intent: "upcoming_events",
-        en_tokens: ["what are the upcoming events of aisa", "upcoming events", "aane wale events"],
-        hi_tokens: ["aisa ke upcoming events kaun se hain", "upcoming events kaun se hain"],
+        questions_en: ["what are the upcoming events of aisa", "upcoming events of aisa", "what are the next events of aisa"],
+        questions_hi: ["aisa ke upcoming events kaun se hain", "upcoming events kaun se hain", "aane wale events kaun se hain"],
+        core_keywords: ["upcoming", "events"],
         en: "The AISA Super Strikers A cricket battle, The freshers Party, TechSymposium Hackathon, and other technical and non-technical events will be organized soon by the AISA.",
         hi: "AISA jald hi The AISA Super Strikers cricket battle, Freshers Party, TechSymposium Hackathon, aur dusre events organize karega."
     },
     {
         intent: "volunteer_head",
-        en_tokens: ["who is the volunteer head in aisa", "volunteer head", "volunteer head in aisa"],
-        hi_tokens: ["aisa mein volunteer head kaun hai", "volunteer head kaun hai"],
+        questions_en: ["who is the volunteer head in aisa", "who is volunteer head", "who is the head of volunteers"],
+        questions_hi: ["aisa mein volunteer head kaun hai", "volunteer head kaun hai", "volunteers ka head kaun hai"],
+        core_keywords: ["volunteer", "head"],
         en: "Rohit Jadhav is a Volunteer Head in AISA.",
         hi: "Rohit Jadhav AISA mein Volunteer Head hain."
     },
     {
         intent: "volunteers",
-        en_tokens: ["who are the volunteers", "volunteers kaun hain", "volunteers"],
-        hi_tokens: ["volunteers kaun hain", "volunteers kon hai", "aisa ke volunteers"],
+        questions_en: ["who are the volunteers", "who are the volunteers in aisa", "names of volunteers"],
+        questions_hi: ["volunteers kaun hain", "volunteers kon hai", "aisa ke volunteers kaun hain"],
+        core_keywords: ["volunteer"],
+        exclude_words: ["head"],
         en: "Manthan Soni, Shravani Asawale, Pradnya Desai, Anuradha Jadhav, Shivraj Banne, Sanskar Govare, Rajvardhini Mane, Maitrayee Jadhav, Harshwardhan Jiddi, Aftab Momin.",
         hi: "Volunteers hain Manthan Soni, Shravani Asawale, Pradnya Desai, Anuradha Jadhav, Shivraj Banne, Sanskar Govare, Rajvardhini Mane, Maitrayee Jadhav, Harshwardhan Jiddi, aur Aftab Momin."
     },
     {
         intent: "founder",
-        en_tokens: ["founder of aisa", "founder", "first president"],
-        hi_tokens: ["aisa ka founder kaun hai", "pehle president"],
+        questions_en: ["founder of aisa", "who is the founder of aisa", "who was the first president of aisa"],
+        questions_hi: ["aisa ka founder kaun hai", "pehle president kaun the", "aisa kisne shuru kiya"],
+        core_keywords: ["founder"],
         en: "Prithviraj Banne was the first president of AISA.",
         hi: "Prithviraj Banne AISA ke pehle president the."
     },
     {
         intent: "who_am_i",
-        en_tokens: ["who am i", "mai kon hu", "main kaun hoon"],
-        hi_tokens: ["mai kon hu", "main kaun hoon"],
+        questions_en: ["who am i", "what is my name", "do you know me"],
+        questions_hi: ["mai kon hu", "main kaun hoon", "mera naam kya hai"],
+        core_keywords: ["who am i"],
         en: "You are Om Pakhale, part of the AISA Technical Team.",
         hi: "Aapka naam Om Pakhale hai."
+    },
+    // --- Rule Book Topics ---
+    {
+        intent: "membership_eligibility",
+        questions_en: ["who is eligible for membership", "what is the eligibility for aisa", "who can join aisa"],
+        questions_hi: ["membership ke liye kaun eligible hai", "aisa kaun join kar sakta hai", "eligibility kya hai"],
+        core_keywords: ["eligib"],
+        exclude_words: ["fee", "dues", "cost", "free"],
+        en: "Membership in AISA is open to all currently enrolled students of DKTE who maintain good academic standing and follow the college code of conduct.",
+        hi: "DKTE ke sabhi enrolled students jo achhi academic standing maintain karte hain, AISA ke member ban sakte hain."
+    },
+    {
+        intent: "membership_fees",
+        questions_en: ["what is the membership fee", "is aisa free to join", "what are the membership dues", "how much is the fee for joining aisa"],
+        questions_hi: ["aisa ki fees kitni hai", "kya aisa free hai", "membership charges kya hain"],
+        core_keywords: ["fee"],
+        en: "Membership in AISA is currently completely free of charge for all eligible members.",
+        hi: "AISA ki membership sabhi eligible students ke liye bilkul free hai."
+    },
+    {
+        intent: "membership_types",
+        questions_en: ["what are the types of membership", "what are the membership categories in aisa", "explain regular associate honorary membership"],
+        questions_hi: ["membership ke types kya hain", "membership categories kya hain", "kitne type ki membership hoti hai"],
+        core_keywords: ["types", "membership"],
+        en: "AISA offers Regular or Executive Members for enrolled students, Associate Members for individuals like alumni, and Honorary Members or Mentors.",
+        hi: "AISA mein teen types ki membership hoti hai: Regular Members, Associate Members, aur Honorary Members ya Mentors."
+    },
+    {
+        intent: "membership_termination",
+        questions_en: ["what is the rule for membership termination", "what happens if a member is terminated", "can terminated members join other clubs"],
+        questions_hi: ["membership terminate hone par kya hota hai", "terminate kaise hote hain", "membership cancel hone par kya hoga"],
+        core_keywords: ["terminat" , "membership"],
+        en: "Terminated members forfeit all rights and privileges and are banned from joining any other club on the college campus.",
+        hi: "Terminate hone par member ke sabhi rights khatam ho jaate hain aur use campus ke kisi doosre club mein join karne par ban laga diya jaata hai."
+    },
+    {
+        intent: "executive_structure",
+        questions_en: ["what is the structure of the executive committee", "what are the posts in executive committee", "what are the roles in aisa"],
+        questions_hi: ["executive committee ka structure kya hai", "aisa mein kaun kaun si posts hain", "committee structure kya hai"],
+        core_keywords: ["structure", "executive"],
+        exclude_words: ["meeting", "bi-weekly"],
+        en: "The Executive Committee consists of the President, Vice President, Secretary, Treasurer, Event Coordinator, Technical Team, Media Team, Planning Team, and Mentors.",
+        hi: "Executive Committee mein President, Vice President, Secretary, Treasurer, Event Coordinator, Technical Team, Media Team, Planning Team, aur Mentors shamil hain."
+    },
+    {
+        intent: "technical_team_role",
+        questions_en: ["what is the role of technical team", "what are technical team responsibilities", "who manages the aisa website"],
+        questions_hi: ["technical team ka kaam kya hai", "technical team ki responsibility kya hai", "website kaun manage karta hai"],
+        core_keywords: ["technical", "team", "role"],
+        en: "The Technical Team leads the technical events conducted by AISA and manages the development and maintenance of AISA's official website.",
+        hi: "Technical Team technical events lead karti hai aur AISA ki official website develop aur manage karti hai."
+    },
+    {
+        intent: "media_team_role",
+        questions_en: ["what is the role of media team", "what are media team responsibilities", "who manages social media"],
+        questions_hi: ["media team ka kaam kya hai", "media team ki responsibility kya hai", "social media kaun sambhalta hai"],
+        core_keywords: ["media", "team", "role"],
+        en: "The Media Team is responsible for maintaining the online and offline reputation of AISA through social media and official communication channels.",
+        hi: "Media Team official communication channels aur social media ke zariye AISA ki online aur offline reputation maintain karti hai."
+    },
+    {
+        intent: "planning_team_role",
+        questions_en: ["what is the role of planning team", "what are planning team responsibilities", "who allocates event coordinator"],
+        questions_hi: ["planning team ka kaam kya hai", "planning team kya karti hai", "planning team ki responsibility kya hai"],
+        core_keywords: ["planning", "team", "role"],
+        en: "The Planning Team assists the secretary with event records and allocates the event coordinator for each event.",
+        hi: "Planning Team secretary ko event records maintain karne mein madad karti hai aur har event ke liye coordinator allocate karti hai."
+    },
+    {
+        intent: "meeting_frequency",
+        questions_en: ["how often are executive committee meetings held", "what is the meeting frequency", "how often does aisa meet"],
+        questions_hi: ["meetings kitne din me hoti hain", "meetings kab hoti hain", "committee meetings kab hoti hain"],
+        core_keywords: ["meeting", "frequency" , "committee", "held"],
+        en: "The Executive Committee holds regular meetings, typically on a bi-weekly basis.",
+        hi: "Executive Committee ki regular meetings aam taur par bi-weekly basis par hoti hain."
+    },
+    {
+        intent: "tie_vote",
+        questions_en: ["who breaks a tie in voting", "what happens in case of a tie vote", "who casts the deciding vote in a tie"],
+        questions_hi: ["voting mein tie hone par kya hota hai", "tie hone par faisla kaun leta hai", "tie breaking vote kaun dalta hai"],
+        core_keywords: ["tie", "voting"],
+        en: "Decisions are made by majority vote. In the event of a tie, the President casts the deciding vote.",
+        hi: "Faisle majority vote se hote hain, aur tie hone par President decisive vote daalte hain."
+    },
+    {
+        intent: "reimbursement_timeline",
+        questions_en: ["what is the reimbursement timeline", "how long do reimbursements take", "within how many days are reimbursements processed"],
+        questions_hi: ["reimbursement kitne din me milta hai", "paise wapas kab milte hain", "reimbursement timeline kya hai"],
+        core_keywords: ["reimbursement" , "timeline"],
+        en: "Out-of-pocket reimbursements must be processed by the Treasurer within one week of submission.",
+        hi: "Kharch kiye gaye paise Treasurer dwara submission ke ek hafte ke andar process kiye jaate hain."
+    },
+    {
+        intent: "official_email",
+        questions_en: ["what is the official email address of aisa", "what is the contact email of aisa", "email of aisa"],
+        questions_hi: ["aisa ka official email kya hai", "aisa ka email address kya hai", "aisa ko mail kaise kare"],
+        core_keywords: ["email", "official"],
+        en: "The official email address of AISA is aisadkte@gmail.com.",
+        hi: "AISA ka official email address aisadkte@gmail.com hai."
+    },
+    {
+        intent: "alcohol_substance_policy",
+        questions_en: ["what is the alcohol and substance policy", "are drugs and alcohol allowed in aisa", "what is the substance abuse rule"],
+        questions_hi: ["alcohol aur drugs par kya rule hai", "substance policy kya hai", "kya alcohol allowed hai"],
+        core_keywords: ["alcohol", "policy"],
+        en: "Consumption of alcohol or illegal substances during association events or activities is strictly prohibited.",
+        hi: "AISA ke kisi bhi event ya activity mein alcohol ya illegal substances ka sevan sakht mana hai."
+    },
+    {
+        intent: "rule_book_authors",
+        questions_en: ["who wrote the rule book", "who is the author of the rule book", "who edited the aisa rulebook"],
+        questions_hi: ["rule book kisne likhi hai", "rulebook kisne banayi", "rule book ke author kaun hai"],
+        core_keywords: ["author", "rule" , "book"],
+        en: "The rule book was authored by Yash Rajesh Kapse and edited by Shreyash Shinde and Pruthviraj Banne, under the guidance of Dr. S.K. Shirgave and Mrs. D.M. Kulkarni.",
+        hi: "Rule book Yash Rajesh Kapse ne likhi hai aur Shreyash Shinde aur Pruthviraj Banne ne edit ki hai, Dr. S.K. Shirgave aur Mrs. D.M. Kulkarni ki guidance mein."
+    },
+    {
+        intent: "dissolution_procedure",
+        questions_en: ["what is the dissolution procedure of aisa", "how can aisa be dissolved", "what vote is required to dissolve aisa"],
+        questions_hi: ["aisa ko dissolve kaise kiya ja sakta hai", "dissolution process kya hai", "club band kaise ho sakta hai"],
+        core_keywords: ["dissolv"],
+        en: "Dissolution of AISA requires a formal proposal approved by a two-thirds majority vote of the general body members present.",
+        hi: "AISA ko dissolve karne ke liye General Body ke do-tihaai sadasyon ka majority vote zaroori hota hai."
     }
 ];
 
 function cleanText(text) {
     let q = text.toLowerCase().trim();
-    q = q.replace(/\\b(usa club|arc club|a circle|asia club|assam|asha|asi club|aisa club|cyclic hello|cyclic)\\b/g, "aisa");
-    q = q.replace(/\\b(vc president|vic president|vice-president)\\b/g, "vice president");
-    q = q.replace(/\\b(ex-vice president|ex vice president|pichle upadhyaksh)\\b/g, "ex vice president");
-    q = q.replace(/\\b(ex president|former president|previous president|past president|experiment)\\b/g, "ex president");
-    q = q.replace(/\\b(aluminium|illumines|value money)\\b/g, "alumni");
-    q = q.replace(/\\b(tech bleeds|tech blades|text blade|text blades|bloods rates)\\b/g, "techblitz");
-    q = q.replace(/\\b(hd of am|head of aiml)\\b/g, "hod of aiml");
-    q = q.replace(/\\b(traders|traidors)\\b/g, "treasurers");
-    q = q.replace(/\\b(legal exchange|legislature|legis|lega)\\b/g, "legacy exchange");
+
+    // 1. Break down phonetic mergers and abbreviations
+    q = q.replace(/\b(techblitz|tech blitz|techbleeds|tech blades|text blades|tech bridge|tag blitz)\b/g, "tech blitz");
+    q = q.replace(/\b(aiml|ai ml|ai & ml|ai and ml)\b/g, "aiml");
+    q = q.replace(/\b(ex vice president|ex-vice president|former vice president|pichle upadhyaksh)\b/g, "ex vice president");
+    q = q.replace(/\b(ex president|ex-president|former president|pichli president)\b/g, "ex president");
+    q = q.replace(/\b(vp|vc president|upadhyaksh)\b/g, "vice president");
+    q = q.replace(/\b(alumni|alumnus|alumni meet|aluminate)\b/g, "alumni");
+    q = q.replace(/\b(hod|head of department)\b/g, "hod");
+    q = q.replace(/\b(coordinator|co-ordinator)\b/g, "coordinator");
+
+    // 2. Normalize Club Name mishearings
+    q = q.replace(/\b(usa|arc|asia|assam|asha|asi|cyclic)\s+club\b/g, "aisa");
+    q = q.replace(/\b(aisa club|aisa)\b/g, "aisa");
+
     return q;
 }
 
-function detectLang(q) {
-    const hindiWords = ["kaun", "kya", "kab", "kisko", "kitne", "pichle", "pehle", "hai", "hain", "the", "thi", "mein"];
-    const words = q.split(/\\s+/);
-    if (words.some(w => hindiWords.includes(w)) || /[\\u0900-\\u097F]/.test(q)) {
-        return "hi";
+// Strict Hindi/Hinglish token detector using regex word boundaries
+function isHindiSpeech(rawText) {
+    if (/[\u0900-\u097F]/.test(rawText)) return true;
+    const cleanRaw = rawText.toLowerCase();
+    const hindiWordsRegex = /\b(kaun|kon|kya|kab|kitne|kitni|pichle|pichli|pehle|pehla|hai|hain|the|thi|mein|me|kisne|kisko|hoga|hogi|batao|bataiye|sunao|kripya)\b/;
+    return hindiWordsRegex.test(cleanRaw);
+}
+
+// Consecutive fallback tracking
+let failureCount = 0;
+
+function getRandomSampleQuestions(count = 5) {
+    let samples = [];
+    let pool = [...RULES];
+    for (let i = 0; i < count && pool.length > 0; i++) {
+        let randomIndex = Math.floor(Math.random() * pool.length);
+        samples.push(pool[randomIndex].questions_en[0]);
+        pool.splice(randomIndex, 1);
     }
-    return "en";
+    return samples;
 }
 
 function getAnswer(rawQuery) {
     const q = cleanText(rawQuery);
-    const lang = detectLang(q);
+    const spokenHindi = isHindiSpeech(rawQuery);
 
-    if (q.includes("ex vice president")) return { text: RULES.find(r => r.intent === "ex_vice_president")[lang], lang };
-    if (q.includes("ex president")) return { text: RULES.find(r => r.intent === "ex_president")[lang], lang };
-    if (q.includes("vice president")) return { text: RULES.find(r => r.intent === "vice_president")[lang], lang };
-    if (q.includes("president") && !q.includes("vice")) return { text: RULES.find(r => r.intent === "president")[lang], lang };
-    if (q.includes("alumni")) return { text: RULES.find(r => r.intent === "legacy_alumni")[lang], lang };
-    if (q.includes("legacy exchange")) return { text: RULES.find(r => r.intent === "legacy_exchange")[lang], lang };
-
+    // Tier 1: Question Pattern Matching
     for (let rule of RULES) {
-        for (let token of rule.en_tokens) {
-            if (q.includes(token)) {
-                return { text: rule[lang], lang };
+        for (let targetQuestion of rule.questions_en) {
+            if (q.includes(cleanText(targetQuestion))) {
+                failureCount = 0; // Reset counter on success
+                return { text: rule.en, lang: "en" };
+            }
+        }
+        for (let targetQuestion of rule.questions_hi) {
+            if (q.includes(cleanText(targetQuestion))) {
+                failureCount = 0; // Reset counter on success
+                return { text: rule.hi, lang: "hi" };
             }
         }
     }
+
+    // Tier 2: Keyword Fallback Matching
+    for (let rule of RULES) {
+        if (rule.exclude_words && rule.exclude_words.some(ex => q.includes(ex))) {
+            continue;
+        }
+
+        const allKeywordsPresent = rule.core_keywords.every(kw => q.includes(kw));
+        if (allKeywordsPresent) {
+            failureCount = 0; // Reset counter on success
+            return {
+                text: spokenHindi ? rule.hi : rule.en,
+                lang: spokenHindi ? "hi" : "en"
+            };
+        }
+    }
+
+    // If no match found, increment failure counter
+    failureCount++;
+
+    if (failureCount >= 3) {
+        failureCount = 0; // Reset counter after triggering suggestion flow
+        const randomQuestions = getRandomSampleQuestions(5);
+        const suggestionText = (spokenHindi ? "माफ़ कीजिए, मैं आपका सवाल समझ नहीं पाया। आप इस तरह के सवाल पूछ सकते हैं: " : "Sorry, I cannot understand the question you asked. You can ask me questions like: ") + randomQuestions.join(", ");
+        return {
+            text: suggestionText,
+            lang: spokenHindi ? "hi" : "en"
+        };
+    }
+
+    // Standard repeat prompt for 1st or 2nd failure
     return {
-        text: lang === "hi" ? "माफ़ कीजिए, मुझे इस सवाल की जानकारी नहीं है।" : "I don't have information on that specific question yet.",
-        lang
+        text: spokenHindi ? "माफ़ कीजिए, क्या आप सवाल दोबारा दोहरा सकते हैं?" : "Can you repeat the question again?",
+        lang: spokenHindi ? "hi" : "en"
     };
 }
 
@@ -695,7 +907,7 @@ startBtn.addEventListener("click", () => {
     startOverlay.style.display = "none";
     statusHint.textContent = "Assistant active...";
 
-    speakAnswer("Hello! I am the AISA Club voice assistant. I am listening, ask me anything.", "en", () => {
+    speakAnswer("Hello! I am the AISA Club voice assistant. You can ask me anything.", "en", () => {
         startListeningEngine();
     });
 });
@@ -707,7 +919,7 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
         startOverlay.style.display = "none";
         setTimeout(() => {
-            speakAnswer("Hello! I am the AISA Club voice assistant. I am listening, ask me anything.", "en", () => {
+            speakAnswer("Hello! I am the AISA Club voice assistant. You can ask me anything.", "en", () => {
                 startListeningEngine();
             });
         }, 500);
