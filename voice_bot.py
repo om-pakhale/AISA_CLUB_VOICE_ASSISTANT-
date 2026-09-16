@@ -266,7 +266,7 @@ const RULES = [
         questions_en: ["introduce yourself", "who are you", "tell me about yourself", "what can you do"],
         questions_hi: ["apna introduction do", "aap kaun ho", "apne bare mein batao", "tum kya kar sakte ho"],
         core_keywords: ["introduce"],
-        en: "I am the AISA Club Voice Assistant, designed to help students and participants with information about the Artificial Intelligence Students Association at DKTE.",
+        en: "MY self Luna Aisa robot, designed to help students and participants with information about the Artificial Intelligence Students Association at DKTE.",
         hi: "Main AISA Club Voice Assistant hoon, jo DKTE mein Artificial Intelligence Students Association ke baare mein jaankari dene ke liye banaya gaya hoon."
     },
     {
@@ -927,7 +927,7 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
         startOverlay.style.display = "none";
         setTimeout(() => {
-            speakAnswer("Hello! I am the AISA Club voice assistant. You can ask me anything.", "en", () => {
+            speakAnswer("Hello! I am the Luna AISA Club   voice Robot. You can ask me anything.", "en", () => {
                 startListeningEngine();
             });
         }, 500);
