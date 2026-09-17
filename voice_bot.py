@@ -266,7 +266,7 @@ const RULES = [
         questions_en: ["introduce yourself", "who are you", "tell me about yourself", "what can you do"],
         questions_hi: ["apna introduction do", "aap kaun ho", "apne bare mein batao", "tum kya kar sakte ho"],
         core_keywords: ["introduce"],
-        en: "MY self Luna Aisa robot, designed to help students and participants with information about the Artificial Intelligence Students Association at DKTE.",
+        en: "MY self Chikki Aisa robot, designed to help students and participants with information about the Artificial Intelligence Students Association at DKTE.",
         hi: "Main AISA Club Voice Assistant hoon, jo DKTE mein Artificial Intelligence Students Association ke baare mein jaankari dene ke liye banaya gaya hoon."
     },
     {
@@ -317,16 +317,16 @@ const RULES = [
         questions_en: ["who are the secretaries", "who is the secretary", "who are the secretaries of aisa", "names of secretaries"],
         questions_hi: ["secretaries kaun hain", "secretaries kon hai", "sachiv kaun hai", "aisa ke sachiv kaun hain"],
         core_keywords: ["secretary"],
-        en: "Mr. Tanmay Chikhalikar and Mr. Ahmad Momin are the Secretaries of the AISA club.",
-        hi: "Mr. Tanmay Chikhalikar aur Mr. Ahmad Momin AISA club ke Secretaries hain."
+        en: "Mr. Ahmad Momin and Mr. Tanmay Chikhalikar are the Secretaries of the AISA club.",
+        hi: "Mr. Ahmad Momin aur Mr. Tanmay Chikhalikar AISA club ke Secretaries hain."
     },
     {
         intent: "treasurers",
         questions_en: ["who are the treasurers", "who is the treasurer", "who are the treasurers of aisa", "who handles finance"],
         questions_hi: ["treasurers kaun hain", "treasurers kon hai", "koshadhyaksh kaun hai", "khajanchi kaun hai"],
         core_keywords: ["treasurer"],
-        en: "Miss. Siddhi Kurle and Mr. Farhan Sheikh are the Treasurers of the AISA club.",
-        hi: "Miss Siddhi Kurle aur Mr. Farhan Sheikh AISA club ke Treasurers hain."
+        en: " Mr. Farhan Sheikh and Miss. Siddhi Kurle  are the Treasurers of the AISA club.",
+        hi: "Mr. Farhan Sheikh and Miss Siddhi Kurle aur  AISA club ke Treasurers hain."
     },
     {
         intent: "technical_directors",
@@ -351,7 +351,7 @@ const RULES = [
         questions_hi: ["social media head aur team members kaun hai", "social media head kon hai", "social media team kaun hai"],
         core_keywords: ["social", "media"],
         exclude_words: ["role", "responsibility"],
-        en: "Mr. Manthan Warte is the Social Media Team Head and The social media team members include Mr. Sushil Sapakal and Mr. Yash Ghatage.",
+        en : "Mr. Manthan Warte is the social media head and team members are Mr. Sushil Sapakal aur Mr. Yash Ghatage hain.",
         hi: "Mr. Manthan Warte Social Media Team ke Head hain aur team members mein Mr. Sushil Sapakal aur Mr. Yash Ghatage hain."
     },
     {
@@ -641,7 +641,15 @@ const RULES = [
         core_keywords: ["dissolv"],
         en: "Dissolution of AISA requires a formal proposal approved by a two-thirds majority vote of the general body members present.",
         hi: "AISA ko dissolve karne ke liye General Body ke do-tihaai sadasyon ka majority vote zaroori hota hai."
-    }
+    },
+    {
+            intent: "Planning team members",
+            questions_en: ["who are the planning team members", "who is the planning team members", "planning team members of aisa"],
+            questions_hi: ["planning team members kaun hain", "planning team members kon hai", "takniki nideshak kaun hai"],
+            core_keywords: ["planning", "team" , "members"],
+            en: "The planning team members are Mr. Atharv Kore, Mr. Darshan Khot, Mr. Pranav Deshmukh, Miss. Drusti Keste, and Miss. Madhura Jasud.",
+            hi: "The planning team members are Mr. Atharv Kore, Mr. Darshan Khot, Mr. Pranav Deshmukh, Miss. Drusti Keste, and Miss. Madhura Jasud."
+        }
 ];
 
 function cleanText(text) {
@@ -915,7 +923,7 @@ startBtn.addEventListener("click", () => {
     startOverlay.style.display = "none";
     statusHint.textContent = "Assistant active...";
 
-    speakAnswer("Hello! I am the AISA Club voice assistant. You can ask me anything.", "en", () => {
+    speakAnswer("Hello! I am the Chikki AISA Club voice assistant. You can ask me anything.", "en", () => {
         startListeningEngine();
     });
 });
@@ -927,7 +935,7 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
         startOverlay.style.display = "none";
         setTimeout(() => {
-            speakAnswer("Hello! I am the Luna AISA Club   voice Robot. You can ask me anything.", "en", () => {
+            speakAnswer("Hello! I am the Chikki AISA Club   voice Robot. You can ask me anything.", "en", () => {
                 startListeningEngine();
             });
         }, 500);
